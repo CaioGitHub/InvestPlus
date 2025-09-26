@@ -6,78 +6,83 @@
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
-<div class="container">
-    <div class="header">Investimentos</div>
+<div class="page-bg">
+    <div class="container">
+        <header class="header">
+            <div class="title">Investimentos</div>
+            <nav class="tabs">
+                <a th:href="@{/investimentos/acoes}" th:classappend="${categoria} == 'acoes' ? 'active' : ''">Ações</a>
+                <a th:href="@{/investimentos/fiis}" th:classappend="${categoria} == 'fiis' ? 'active' : ''">FIIs</a>
+                <a th:href="@{/investimentos/favoritos}" th:classappend="${categoria} == 'favoritos' ? 'active' : ''">Meus Favoritos</a>
+            </nav>
+        </header>
 
-    <div class="tabs">
-        <a th:href="@{/investimentos/acoes}" th:classappend="${categoria} == 'acoes' ? 'active' : ''">Ações</a>
-        <a th:href="@{/investimentos/fiis}" th:classappend="${categoria} == 'fiis' ? 'active' : ''">FIIs</a>
-        <a th:href="@{/investimentos/favoritos}" th:classappend="${categoria} == 'favoritos' ? 'active' : ''">Meus Favoritos</a>
-    </div>
-
-    <!-- CONTROLS: Busca em uma linha; Ordenação em outra -->
-    <div class="controls">
-        <form id="searchSortForm" method="get"
-              th:action="@{/investimentos/{categoria}(categoria=${categoria})}">
-            <!-- primeira linha: busca -->
+        <form id="searchSortForm" class="controls" method="get" th:action="@{/investimentos/{categoria}(categoria=${categoria})}">
             <div class="search-row">
-                <input class="codigo-input" type="text" name="codigo" placeholder="Pesquisar por código (ex: PETR4)"
-                       th:value="${codigo != null ? codigo : ''}" />
-                <button class="search-btn" type="submit">Buscar</button>
-            </div>
-
-            <!-- segunda linha: ordenação -->
-            <div class="sort-row">
-                <input type="hidden" name="page" id="pageInput" th:value="${page}"/>
-
-                <label class="sort-label">Ordenar por:</label>
-                <select name="sort" id="sortSelect" class="sort-select">
-                    <option value="name" th:selected="${sort=='name'}">Nome</option>
-                    <option value="close" th:selected="${sort=='close'}">Valor</option>
-                </select>
-
-                <select name="dir" id="dirSelect" class="dir-select">
-                    <option value="asc" th:selected="${dir=='asc'}">Crescente</option>
-                    <option value="desc" th:selected="${dir=='desc'}">Decrescente</option>
-                </select>
-
-                <button class="apply-btn" type="submit">Aplicar</button>
-            </div>
-        </form>
-    </div>
-
-    <section class="list-section">
-        <div class="item" th:each="ativo : ${ativos}">
-            <div style="display:flex; align-items:center;">
-                <img th:if="${ativo.logo != null}" th:src="${ativo.logo}" alt="logo"
-                     style="width:28px;height:28px;margin-right:8px;vertical-align:middle"/>
-                <div>
-                    <strong th:text="${ativo.stock}"></strong> -
-                    <span th:text="${ativo.name}"></span> <br>
-                    <span th:if="${ativo.close != null}">
-                        Preço: <span th:text="${ativo.close}">0.00</span>
-                    </span>
+                <div class="search-input-wrapper">
+                    <input class="codigo-input" type="text" name="codigo" placeholder="Pesquisar por código (ex: PETR4)"
+                           th:value="${codigo != null ? codigo : ''}" />
+                    <button class="search-btn" type="submit" aria-label="Buscar">🔍</button>
                 </div>
             </div>
-            <button
-                    th:data-symbol="${ativo.stock}"
-                    th:data-name="${ativo.name != null ? ativo.name : ''}"
-                    th:data-category="${ativo.type != null ? ativo.type : categoria}"
-                    th:text="${observadoSymbols.contains(ativo.stock) ? '-' : '+'}">
-            </button>
+
+            <div class="sort-row">
+                <div class="label">Ordenar por:</div>
+
+                <div class="toggle-group" role="tablist" aria-label="Ordenar por">
+                    <button type="button" class="pill pill-selected" data-sort="name">Nome</button>
+                    <button type="button" class="pill" data-sort="close">Preço</button>
+                </div>
+
+                <div class="label">Direção:</div>
+                <div class="toggle-group" role="tablist" aria-label="Direção">
+                    <button type="button" class="pill pill-selected" data-dir="asc">Crescente</button>
+                    <button type="button" class="pill" data-dir="desc">Decrescente</button>
+                </div>
+            </div>
+
+            <div class="apply-row">
+                <input type="hidden" name="sort" id="sortInput" th:value="${sort != null ? sort : 'name'}" />
+                <input type="hidden" name="dir" id="dirInput" th:value="${dir != null ? dir : 'asc'}" />
+                <input type="hidden" name="page" id="pageInput" th:value="${page}" />
+
+                <button type="button" id="applyFiltersBtn" class="apply-filters">Aplicar Filtros</button>
+            </div>
+        </form>
+
+        <section class="list-section" aria-live="polite">
+            <div class="item" th:each="ativo : ${ativos}" tabindex="0">
+                <div class="left">
+                    <img th:if="${ativo.logo != null}" th:src="${ativo.logo}" alt="logo"
+                         class="logo" />
+                    <div class="meta">
+                        <strong th:text="${ativo.stock}">ABCD3</strong>
+                        <small th:text="${ativo.name}">Nome da empresa</small>
+                        <div class="price" th:if="${ativo.close != null}">Preço: <span th:text="${ativo.close}">0.00</span></div>
+                    </div>
+                </div>
+
+                <button
+                        class="fav-btn"
+                        th:data-symbol="${ativo.stock}"
+                        th:data-name="${ativo.name != null ? ativo.name : ''}"
+                        th:data-category="${ativo.type != null ? ativo.type : categoria}"
+                        th:text="${observadoSymbols.contains(ativo.stock) ? '-' : '+'}">
+                </button>
+            </div>
+        </section>
+
+        <div class="pager">
+            <a th:classappend="${page <= 1} ? 'disabled' : ''"
+               th:if="${page > 1}"
+               th:href="@{/investimentos/{categoria}(categoria=${categoria},page=${page-1},sort=${sort},dir=${dir})}">‹</a>
+
+            <span>Pagina <strong th:text="${page}">1</strong> de <strong th:text="${totalPages}">1</strong></span>
+
+            <a th:classappend="${page >= totalPages} ? 'disabled' : ''"
+               th:if="${page < totalPages}"
+               th:href="@{/investimentos/{categoria}(categoria=${categoria},page=${page+1},sort=${sort},dir=${dir})}">›</a>
         </div>
-    </section>
-
-    <div class="pager">
-        <a th:classappend="${page <= 1} ? 'disabled' : ''"
-           th:if="${page > 1}"
-           th:href="@{/investimentos/{categoria}(categoria=${categoria},page=${page-1},sort=${sort},dir=${dir})}"> < </a>
-
-        <span>Pagina <strong th:text="${page}">1</strong> de <strong th:text="${totalPages}">1</strong></span>
-
-        <a th:classappend="${page >= totalPages} ? 'disabled' : ''"
-           th:if="${page < totalPages}"
-           th:href="@{/investimentos/{categoria}(categoria=${categoria},page=${page+1},sort=${sort},dir=${dir})}"> > </a>
     </div>
 </div>
 
