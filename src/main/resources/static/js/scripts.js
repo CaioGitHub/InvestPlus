@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     body: JSON.stringify({ symbol, name, category })
                 });
                 if (res.ok) {
-                    // simples reload para refletir a mudança
                     window.location.reload();
                 } else {
                     alert("Erro no servidor ao atualizar favoritos");

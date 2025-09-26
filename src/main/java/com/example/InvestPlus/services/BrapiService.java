@@ -14,13 +14,15 @@ public class BrapiService {
         this.client = builder.baseUrl(baseUrl).build();
     }
 
-    public BrapiListResponse listarAtivos(String tipo, int page, int limit) {
+    public BrapiListResponse listarAtivos(String tipo, int page, int limit, String sort, String dir) {
         return client.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/quote/list")
                         .queryParam("type", tipo)
                         .queryParam("page", page)
                         .queryParam("limit", limit)
+                        .queryParam("sortBy", sort)
+                        .queryParam("sortOrder", dir)
                         .build())
                 .retrieve()
                 .bodyToMono(BrapiListResponse.class)

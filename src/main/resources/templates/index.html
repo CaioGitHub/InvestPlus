@@ -14,7 +14,25 @@
         <a th:href="@{/investimentos/fiis}" th:classappend="${categoria} == 'fiis' ? 'active' : ''">FIIs</a>
         <a th:href="@{/investimentos/favoritos}" th:classappend="${categoria} == 'favoritos' ? 'active' : ''">Meus Favoritos</a>
     </div>
+    <div style="padding:10px; text-align:center;">
+        <form method="get" th:action="@{/investimentos/{categoria}(categoria=${categoria})}">
+            <input type="hidden" name="page" th:value="${page}"/>
 
+            <label>Ordenar por: </label>
+            <select name="sort">
+                <option value="name" th:selected="${sort=='name'}">Nome</option>
+                <option value="close" th:selected="${sort=='close'}">Valor</option>
+            </select>
+
+            <select name="dir">
+                <option value="asc" th:selected="${dir=='asc'}">Crescente</option>
+                <option value="desc" th:selected="${dir=='desc'}">Decrescente</option>
+            </select>
+
+            <button type="submit">Aplicar</button>
+        </form>
+
+    </div>
     <section class="list-section">
         <div class="item" th:each="ativo : ${ativos}">
             <div style="display:flex; align-items:center;">

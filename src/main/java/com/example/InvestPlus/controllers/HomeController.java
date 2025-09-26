@@ -7,6 +7,8 @@ import com.example.InvestPlus.repositories.ObservadoRepository;
 import com.example.InvestPlus.services.BrapiService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +32,8 @@ public class HomeController {
     @GetMapping({"", "/{categoria}"})
     public String index(@PathVariable(required = false) String categoria,
                         @RequestParam(defaultValue = "1") int page,
+                        @RequestParam(defaultValue = "name") String sort,
+                        @RequestParam(defaultValue = "asc") String dir,
                         Model model) {
 
         int limit = 10;
@@ -51,19 +55,25 @@ public class HomeController {
         int totalPages = 1;
 
         if ("favoritos".equals(cat)) {
-            Page<Observado> pageFav = repo.findAll(PageRequest.of(Math.max(page - 1, 0), limit));
+            Page<Observado> pageFav = repo.findAll(
+                    PageRequest.of(Math.max(page - 1, 0), limit,
+                            "desc".equalsIgnoreCase(dir) ? Sort.by(sort).descending() : Sort.by(sort).ascending()
+                    )
+            );
+
             ativos = pageFav.stream().map(o -> {
                 StockDto s = new StockDto();
                 s.setStock(o.getSymbol());
                 s.setName(o.getName());
                 s.setType(o.getCategory());
                 return s;
-            }).collect(Collectors.toList());
+            }).toList();
 
             currentPage = pageFav.getNumber() + 1;
             totalPages = pageFav.getTotalPages() == 0 ? 1 : pageFav.getTotalPages();
         } else {
-            BrapiListResponse data = brapi.listarAtivos(tipo, page, limit);
+            // Ordenação na API BRapi
+            BrapiListResponse data = brapi.listarAtivos(tipo, page, limit, sort, dir);
             ativos = (data != null && data.getStocks() != null) ? data.getStocks() : Collections.emptyList();
             currentPage = (data != null) ? data.getCurrentPage() : page;
             totalPages = (data != null) ? Math.max(1, data.getTotalPages()) : 1;
@@ -77,6 +87,8 @@ public class HomeController {
         model.addAttribute("categoria", cat);
         model.addAttribute("page", currentPage);
         model.addAttribute("totalPages", totalPages);
+        model.addAttribute("sort", sort);
+        model.addAttribute("dir", dir);
         model.addAttribute("observados", repo.findAll());
         model.addAttribute("observadoSymbols", observadoSymbols);
 
