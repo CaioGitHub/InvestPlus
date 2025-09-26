@@ -16,22 +16,12 @@
     </div>
     <div style="padding:10px; text-align:center;">
         <form method="get" th:action="@{/investimentos/{categoria}(categoria=${categoria})}">
+            <input type="text" name="codigo" placeholder="Pesquisar por código (ex: PETR4)" />
             <input type="hidden" name="page" th:value="${page}"/>
-
-            <label>Ordenar por: </label>
-            <select name="sort">
-                <option value="name" th:selected="${sort=='name'}">Nome</option>
-                <option value="close" th:selected="${sort=='close'}">Valor</option>
-            </select>
-
-            <select name="dir">
-                <option value="asc" th:selected="${dir=='asc'}">Crescente</option>
-                <option value="desc" th:selected="${dir=='desc'}">Decrescente</option>
-            </select>
-
-            <button type="submit">Aplicar</button>
+            <input type="hidden" name="sort" th:value="${sort}"/>
+            <input type="hidden" name="dir" th:value="${dir}"/>
+            <button type="submit">Buscar</button>
         </form>
-
     </div>
     <section class="list-section">
         <div class="item" th:each="ativo : ${ativos}">
