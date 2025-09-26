@@ -6,7 +6,6 @@ body, html { height:100%; margin:0; font-family: 'Inter', Arial, sans-serif; }
   align-items:center;
   justify-content:center;
   background: url('https://fastly.picsum.photos/id/999/1600/900.jpg?blur=10&hmac=en3clvSrXvw8z3EE7skt89Mfhl4H9zrll__C6-osgQI') no-repeat center/cover;
-  padding: 24px;
 }
 
 .container {
