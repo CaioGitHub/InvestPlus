@@ -37,14 +37,11 @@ public class BrapiService {
 
     public StockDto buscarPorCodigo(String codigo) {
         BrapiListResponse response = client.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/quote/{codigo}")
-                        .build(codigo))
+                .uri(uriBuilder -> uriBuilder.path("/quote/{codigo}").build(codigo))
                 .retrieve()
                 .bodyToMono(BrapiListResponse.class)
                 .block();
 
-        
         if (response == null || response.getStocks() == null || response.getStocks().isEmpty()) {
             try {
                 String raw = client.get()
@@ -59,9 +56,7 @@ public class BrapiService {
             return null;
         }
 
-        BrapiStockResponse br = response.getStocks().get(0);
-        
-        return toStockDto(br);
+        return toStockDto(response.getStocks().get(0));
     }
 
     public List<StockDto> listarAtivosDto(String tipo, int page, int limit, String sort, String dir) {
@@ -71,19 +66,27 @@ public class BrapiService {
                 .map(this::toStockDto)
                 .collect(Collectors.toList());
     }
-    
-    public StockDto toStockDto(BrapiStockResponse br) {
+
+    private StockDto toStockDto(BrapiStockResponse br) {
+        if (br == null) return null;
+
         StockDto dto = new StockDto();
         dto.setStock(br.getStock());
-        dto.setName(br.getName());
+        dto.setName(br.getName() != null ? br.getName() : "");
         dto.setClose(br.getClose());
         dto.setChange(br.getChange());
         dto.setVolume(br.getVolume());
         dto.setMarketCap(br.getMarketCap());
-        dto.setLogo(br.getLogo());
-        dto.setSector(br.getSector());
-        dto.setType(br.getType());
+
+        String logo = br.getLogo();
+        if (logo == null || logo.isBlank()) {
+            logo = "https://icons.brapi.dev/icons/" + (br.getStock() != null ? br.getStock() : "BRAPI") + ".svg";
+        }
+        dto.setLogo(logo);
+
+        dto.setSector(br.getSector() != null ? br.getSector() : "");
+        dto.setType(br.getType() != null ? br.getType() : "stock");
+
         return dto;
     }
-
 }
