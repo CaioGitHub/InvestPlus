@@ -185,3 +185,71 @@ body {
 .pager a:hover {
     text-decoration: underline;
 }
+
+/* CONTROLS - search + sort rows */
+.controls {
+    padding: 10px;
+    text-align: center;
+}
+
+/* container da primeira linha (busca) */
+.search-row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+/* container da segunda linha (ordenacao) */
+.sort-row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* inputs e botões */
+.codigo-input {
+    width: 220px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+}
+
+.search-btn, .apply-btn {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: none;
+    background: #0a7cff;
+    color: #fff;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+.search-btn:hover, .apply-btn:hover {
+    background: #005bb5;
+}
+
+.sort-select, .dir-select {
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+}
+
+/* label */
+.sort-label {
+    color: #eee;
+    margin-right: 4px;
+}
+
+/* responsividade: encolhe inputs em telas pequenas */
+@media (max-width: 420px) {
+    .codigo-input { width: 160px; }
+    .sort-row { gap: 6px; }
+}
