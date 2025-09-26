@@ -7,7 +7,6 @@ import com.example.InvestPlus.repositories.ObservadoRepository;
 import com.example.InvestPlus.services.BrapiService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +15,6 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 @Controller
 @RequestMapping("/investimentos")
 public class HomeController {
@@ -36,15 +34,12 @@ public class HomeController {
 
         int limit = 10;
         String tipo;
-
-        // Normaliza categoria
         String cat = categoria != null ? categoria.toLowerCase() : "acoes";
 
         switch (cat) {
             case "acoes" -> tipo = "stock";
             case "fiis" -> tipo = "fund";
-            case "internacional" -> tipo = "bdr"; // ou "etf" se preferir
-            case "favoritos" -> tipo = null; // sinaliza que vamos usar DB
+            case "favoritos" -> tipo = null;
             default -> {
                 cat = "acoes";
                 tipo = "stock";
@@ -56,7 +51,6 @@ public class HomeController {
         int totalPages = 1;
 
         if ("favoritos".equals(cat)) {
-            // Pagina os favoritos no banco
             Page<Observado> pageFav = repo.findAll(PageRequest.of(Math.max(page - 1, 0), limit));
             ativos = pageFav.stream().map(o -> {
                 StockDto s = new StockDto();
@@ -69,14 +63,12 @@ public class HomeController {
             currentPage = pageFav.getNumber() + 1;
             totalPages = pageFav.getTotalPages() == 0 ? 1 : pageFav.getTotalPages();
         } else {
-            // Chama a API BRapi com paginação
             BrapiListResponse data = brapi.listarAtivos(tipo, page, limit);
             ativos = (data != null && data.getStocks() != null) ? data.getStocks() : Collections.emptyList();
             currentPage = (data != null) ? data.getCurrentPage() : page;
             totalPages = (data != null) ? Math.max(1, data.getTotalPages()) : 1;
         }
 
-        // Set de símbolos observados para checagem rápida no template
         Set<String> observadoSymbols = repo.findAll().stream()
                 .map(Observado::getSymbol)
                 .collect(Collectors.toSet());
