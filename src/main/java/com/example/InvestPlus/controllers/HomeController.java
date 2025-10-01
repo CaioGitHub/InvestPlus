@@ -80,7 +80,7 @@ public class HomeController {
 
         } else {
             BrapiListResponse data = brapi.listarAtivos(tipo, page, limit, sort, dir);
-            ativos = brapi.listarAtivosDto(tipo, page, limit, sort, dir);
+            ativos = brapi.toStockDtoList(data);
             currentPage = (data != null) ? data.getCurrentPage() : page;
             totalPages = (data != null) ? Math.max(1, data.getTotalPages()) : 1;
         }
