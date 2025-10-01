@@ -60,7 +60,10 @@ public class BrapiService {
     }
 
     public List<StockDto> listarAtivosDto(String tipo, int page, int limit, String sort, String dir) {
-        BrapiListResponse response = listarAtivos(tipo, page, limit, sort, dir);
+        return toStockDtoList(listarAtivos(tipo, page, limit, sort, dir));
+    }
+
+    public List<StockDto> toStockDtoList(BrapiListResponse response) {
         if (response == null || response.getStocks() == null) return Collections.emptyList();
         return response.getStocks().stream()
                 .map(this::toStockDto)
